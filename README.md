@@ -11,15 +11,21 @@ beginner friendly for those who are new to the IETF or new to the Hackathon.
 
 ## Prerequisites
 
-- [The IETF hackathon wiki][wiki]
-- [The Resumable Uploads for HTTP draft][rufh] (RUFH)
-- Awareness of [tus][]. RUFH is an evolution of [tus][], an existing open
+- Familiarity with either JavaScript (runtimes), HTTP proxies, or building CLI
+  tools.
+- Optionally, awareness of [tus][]. RUFH is an evolution of [tus][], an existing open
   protocol for resumable uploads. As such you can look at practical
   implementations, such as the official [tus-js-client][] and [tusd][], a
   reference implementation in Go with [support for the new IETF
   protocol][tusd-draft].
-- Familiarity with either JavaScript (runtimes), HTTP proxies, or building CLI
-  tools
+
+## Resources
+
+- [The IETF hackathon wiki][wiki] contains organizational details for the hackathon.
+- [The Resumable Uploads for HTTP draft][rufh] (RUFH) is the central document for our
+  project.
+- [draft-example][] contains several client and server implementation for RUFH,
+  targetting the current or previous versions of the draft.
 
 ## Challenges
 
@@ -33,7 +39,8 @@ discuss supporting resumable uploads but there is no timeline on that front.
 #### Solution
 
 To move things along and to have a plug-and-play alternative, we want to explore
-creating a [polyfill][] for the [Fetch][] API for resumable uploads.
+creating a [polyfill][] for the [Fetch][] API for resumable uploads. It could help
+to find a suitable API for resumable upload in browsers.
 
 #### Requirements
 
@@ -49,11 +56,10 @@ const response = await fetch(url, {
 ```
 
 - When the request completes the response should be provided
-- When the request is interrupted and no `104 Upload Resumption Supported` was
-  received, an error should be thrown.
-- When the request is interrupted and a `104 Upload Resumption Supported` was
-  received, the client should initiate a resumption. This can result in an error
-  or response.
+- Uploads should be pausable and resumable.
+- The current [Fetch][] API does not expose informational responses (1XX)
+  to the user. The polyfill should work around this by using `Upload-Complete: ?0`
+  to separate the upload creation from the data transfer in multiple requests.
 
 ### Plugins for popular HTTP proxies for handling resumable uploads
 
@@ -62,8 +68,10 @@ requests rather than having a separate (or integrable) RUFH server, which would
 write it to disk or to some storage provider. But they do want reliable,
 resumable uploads without reading the files again yourself.
 
-In other cases a platform, such as WordPress, can not be extended to handle
+In other cases a platform, such as WordPress, can not easily be extended to handle
 resumable uploads but could receive a traditional request with a file.
+
+The [Swift NIO implementation][] uses a similar approach.
 
 #### Solution
 
@@ -77,7 +85,8 @@ other contributions.
 ### CLI program to test if a server conforms to the spec
 
 Implementing RUFH (or [tus][]) means re-implementing the same kind of end-to-end
-tests over and over again.
+tests over and over again. To ensure compatability and interoperability between
+servers and clients, a tool for checking conformness to the protocol is helpful.
 
 #### Solution
 
@@ -122,3 +131,5 @@ runtimes.
 [fetch]: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API
 [tus-fetch]: https://github.com/whatwg/fetch/issues/1626
 [polyfill]: https://developer.mozilla.org/en-US/docs/Glossary/Polyfill
+[draft-example]: https://github.com/tus/draft-example
+[Swift NIO implementation]: https://github.com/tus/draft-example/tree/main/servers/swift-nio
