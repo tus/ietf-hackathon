@@ -1,13 +1,13 @@
 # IETF 118 Hackathon
 
 The Internet Engineering Task Force (IETF) is holding a hackathon to encourage
-developers and subject matter experts to discuss, collaborate, and develop
+developers and subject-matter experts to discuss, collaborate, and develop
 utilities, ideas, sample code, and solutions that show practical implementations
 of IETF standards.
 
 This is the repository for the [Resumable Uploads for HTTP][rufh] (RUFH)
 hackathon project to hold the context and individual challenges. The project is
-beginner friendly for those who are new to the IETF or new to the Hackathon.
+beginner-friendly for those who are new to the IETF or new to the Hackathon.
 
 ## Prerequisites
 
@@ -25,7 +25,7 @@ beginner friendly for those who are new to the IETF or new to the Hackathon.
 - [The Resumable Uploads for HTTP draft][rufh] (RUFH) is the central document for our
   project.
 - [draft-example][] contains several client and server implementation for RUFH,
-  targetting the current or previous versions of the draft.
+  targeting the current or previous versions of the draft.
 
 ## Challenges
 
@@ -85,8 +85,8 @@ other contributions.
 ### CLI program to test if a server conforms to the spec
 
 Implementing RUFH (or [tus][]) means re-implementing the same kind of end-to-end
-tests over and over again. To ensure compatability and interoperability between
-servers and clients, a tool for checking conformness to the protocol is helpful.
+tests over and over again. To ensure compatibility and interoperability between
+servers and clients, a tool for checking conformity to the protocol is helpful.
 
 #### Solution
 
