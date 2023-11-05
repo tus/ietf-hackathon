@@ -1,0 +1,3 @@
+[submodule "caddy-rufh"]
+	path = caddy-rufh
+	url = https://github.com/Murderlon/caddy-rufh
