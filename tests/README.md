@@ -7,7 +7,7 @@ test cases to check whether server under test complies with RUFH protocol specs.
 
 ## Installation
 
-### Retrieve the code from got repository and create python virtual environment
+### Retrieve the code from git repository and create python virtual environment
 1. `git clone [the repo]`
 1. `cd ietf-hackathon`
 1. `python -m venv venv`
