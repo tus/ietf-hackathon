@@ -1,6 +1,8 @@
-import requests
-import pytest
 import os
+from urllib.parse import urlparse
+
+import pytest
+import requests
 
 # some constants used frequently in tests
 FALSE = '?0'
@@ -19,24 +21,35 @@ def small_file(request):
     return open(os.path.join('tests', 'test.txt'), 'rb')
 
 
+@pytest.fixture
+def post(url):
+    req = requests.Request('POST', url=url)
+    req.headers[UPLOAD_DRAFT] = str(4)
+    return req.prepare()
+
+
+@pytest.fixture
+def head(url):
+    req = requests.Request('HEAD', url=url)
+    req.headers[UPLOAD_DRAFT] = str(4)
+    return req.prepare()
+
+
+@pytest.fixture
+def post_with_file(url, small_file):
+    req = requests.Request('POST', url=url)
+    req.headers[UPLOAD_DRAFT] = str(4)
+    files = {'file': small_file}
+    req.files = files
+    return req.prepare()
+
+
+@pytest.fixture
+def session():
+    return requests.Session()
+
+
 class TestPost:
-    @pytest.fixture
-    def post(self, url):
-        req = requests.Request('POST', url=url)
-        req.headers[UPLOAD_DRAFT] = str(4)
-        return req.prepare()
-
-    @pytest.fixture
-    def post_with_file(self, url, small_file):
-        req = requests.Request('POST', url=url)
-        req.headers[UPLOAD_DRAFT] = str(4)
-        files = {'file': small_file}
-        req.files = files
-        return req.prepare()
-
-    @pytest.fixture
-    def session(self):
-        return requests.Session()
 
     def test_known_size_upload(self, post_with_file, session):
         post_with_file.headers[UPLOAD_COMPLETE] = TRUE
@@ -51,6 +64,27 @@ class TestPost:
 
 
 class TestHead:
+    def test_offset_retrieval(self, post_with_file, session, head):
+        post_with_file.headers[UPLOAD_COMPLETE] = TRUE
+
+        r = session.send(post_with_file)
+        assert r.status_code == 104, "104 status code was expected"
+        assert LOCATION in r.headers, "Location header was expected"
+        assert r.headers[LOCATION], "Non-empty Location header value was expected"
+
+        location = r.headers[LOCATION]
+        # urlparse will throw an exception in case the location url is not correct
+        # to pass the test, we don't expect the exception
+        urlparse(location)
+        head.url = location
+        r = session.send(head)
+        assert r.status_code == 204, "204 status code was expected"
+        assert UPLOAD_OFFSET in r.headers
+        assert r.headers[UPLOAD_OFFSET]
+        assert int(r.headers[UPLOAD_OFFSET]) > 0
+        assert UPLOAD_COMPLETE in r.headers
+        assert r.headers[UPLOAD_COMPLETE] == TRUE
+
     def test_simple_head(self):
         pass
 
